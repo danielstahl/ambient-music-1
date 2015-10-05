@@ -33,8 +33,8 @@ SynthDef(\arControl, {
 	Out.kr(out, EnvGen.kr(arEnv, doneAction:2));
 }).add;
 
-SynthDef(\sinControl, {
-	arg dur, out = 0,
+SynthDef(\sineControl, {
+	arg dur, out = 0, phase = 0,
 	startFreq, endFreq,
 	mulStart = 1, mulEnd = 1,
 	addStart = 0, addEnd = 0;
@@ -42,7 +42,7 @@ SynthDef(\sinControl, {
 	freqEnv = Line.kr(startFreq, endFreq, dur, doneAction:2);
 	mulEnv = Line.kr(mulStart, mulEnd, dur);
 	addEnv = Line.kr(addStart, addEnd, dur);
-	Out.kr(out, SinOsc.kr(freqEnv, mul:mulEnv, add:addEnv));
+	Out.kr(out, SinOsc.kr(freq:freqEnv, phase:phase, mul:mulEnv, add:addEnv));
 }).add;
 
 SynthDef(\pinkNoise, {
@@ -104,6 +104,27 @@ SynthDef(\monAural, {
 	Out.ar(out, (SinOsc.ar(leftFreq) * amp) + (SinOsc.ar(rightFreq) * amp));
 }).add;
 
+SynthDef(\sine, {
+	arg dur, freqBus, ampBus, out = 0;
+	var freq, amp;
+	Line.kr(dur:dur, doneAction:2);
+	freq = In.kr(freqBus);
+	amp = In.kr(ampBus);
+
+	Out.ar(out, SinOsc.ar(freq) * amp);
+}).add;
+
+SynthDef(\pulse, {
+        arg dur = 1, ampBus = 0, freqBus = 1, widthBus = 2, out = 0;
+        var pulse, amp, freq, width;
+        Line.kr(dur:dur, doneAction:2);
+        amp = In.kr(ampBus);
+        freq = In.kr(freqBus);
+        width = In.kr(widthBus);
+        pulse = Pulse.ar(freq, width);
+        Out.ar(out, pulse * amp);
+}).add;
+
 SynthDef(\pan, {
 	arg dur = 1, panBus = 0, in = 0, out = 0;
 	var pan, input;
@@ -140,23 +161,95 @@ SynthDef(\monoVolumeReplace, {
 	ReplaceOut.ar(in, input * amp);
 }).add;
 
-SynthDef(\gverb, {
-	arg dur = 1, in = 0, out = 0,
-	roomSize, revTime, damping, inputBw,
-	spread = 15, earlyLevel, tailLevel;
-	var input;
+SynthDef(\filt, {
+	arg dur = 1, ampBus = 0, freqBus = 1, bwBus = 2, in = 0, out = 0;
+	var filt, amp, freq, bw, input;
 	Line.kr(dur:dur, doneAction:2);
-	input = In.ar(in, 2);
-	Out.ar(out,
-		GVerb.ar(Mix.new(input),
-		roomSize,
-        revTime,
-        damping,
-        inputBw,
-        spread,
-        0,
-        earlyLevel.dbamp,
-        tailLevel.dbamp,
-		roomSize, 0.3));
+	amp = In.kr(ampBus);
+	freq = In.kr(freqBus);
+	bw = In.kr(bwBus);
+	input = In.ar(in, 1);
+	filt = BPF.ar(input, freq, bw * freq);
+	filt = Balance.ar(filt, input);
+	Out.ar(out, filt * amp);
+}).add;
+
+SynthDef(\filtReject, {
+	arg dur = 1, ampBus = 0, freqBus = 1, bwBus = 2, in = 0, out = 0;
+	var filt, amp, freq, bw, input;
+	Line.kr(dur:dur, doneAction:2);
+	amp = In.kr(ampBus);
+	freq = In.kr(freqBus);
+	bw = In.kr(bwBus);
+	input = In.ar(in, 1);
+	filt = BRF.ar(input, freq, bw * freq);
+	filt = Balance.ar(filt, input);
+	Out.ar(out, filt * amp);
+}).add;
+
+SynthDef(\filtReplace, {
+	arg dur = 1, ampBus = 0, freqBus = 1, bwBus = 2, in = 0;
+	var filt, amp, freq, bw, input;
+	Line.kr(dur:dur, doneAction:2);
+	amp = In.kr(ampBus);
+	freq = In.kr(freqBus);
+	bw = In.kr(bwBus);
+	input = In.ar(in, 1);
+	filt = BPF.ar(input, freq, bw * freq);
+	filt = Balance.ar(filt, input);
+	ReplaceOut.ar(in, filt * amp);
+}).add;
+
+SynthDef(\filtRejectReplace, {
+	arg dur = 1, ampBus = 0, freqBus = 1, bwBus = 2, in = 0;
+	var filt, amp, freq, bw, input;
+	Line.kr(dur:dur, doneAction:2);
+	amp = In.kr(ampBus);
+	freq = In.kr(freqBus);
+	bw = In.kr(bwBus);
+	input = In.ar(in, 1);
+	filt = BRF.ar(input, freq, bw * freq);
+	filt = Balance.ar(filt, input);
+	ReplaceOut.ar(in, filt * amp);
+}).add;
+
+SynthDef(\highPass, {
+        arg dur = 1, freqBus = 1, in = 0, out = 0;
+        var filt, freq, input;
+        Line.kr(dur:dur, doneAction:2);
+        freq = In.kr(freqBus);
+        input = In.ar(in, 1);
+        filt = HPF.ar(input, freq);
+        Out.ar(out, filt);
+}).add;
+
+SynthDef(\highPassReplace, {
+        arg dur = 1, freqBus = 1, in = 0;
+        var filt, freq, input;
+        Line.kr(dur:dur, doneAction:2);
+        freq = In.kr(freqBus);
+        input = In.ar(in, 1);
+        filt = HPF.ar(input, freq);
+        ReplaceOut.ar(in, filt);
+}).add;
+
+SynthDef(\lowPass, {
+        arg dur = 1, freqBus = 1, in = 0, out = 0;
+        var filt, freq, input;
+        Line.kr(dur:dur, doneAction:2);
+        freq = In.kr(freqBus);
+        input = In.ar(in, 1);
+        filt = LPF.ar(input, freq);
+        Out.ar(out, filt);
+}).add;
+
+SynthDef(\lowPassReplace, {
+        arg dur = 1, freqBus = 1, in = 0;
+        var filt, freq, input;
+        Line.kr(dur:dur, doneAction:2);
+        freq = In.kr(freqBus);
+        input = In.ar(in, 1);
+        filt = LPF.ar(input, freq);
+        ReplaceOut.ar(in, filt);
 }).add;
 )

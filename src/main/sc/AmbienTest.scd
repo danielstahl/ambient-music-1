@@ -75,18 +75,34 @@ Synth("thetaStereo", [dur: 10, first: 100, secondStart: 130, secondEnd: 107, att
 
 { SinOsc.ar(40, SinOsc.kr(4))}.play;
 
-{SinOsc.kr(4, mul:1, add:-0.5)}.plot(1);
+{SinOsc.kr(4, add:1)}.plot(1);
 
 {SinOsc.kr(4)}.plot(1);
 
 
-
 { WhiteNoise.ar(SinOsc.kr(Line.kr(4/60, 7/60, 10)))}.play;
 
-{SinOsc.kr(4, mul:0.5)}.plot(1);
+// 0 1 0 -1
+{SinOsc.kr(4)}.plot(1);
+
+// half 0 -1 0 1
+{SinOsc.kr(4, phase: pi)}.plot(1);
+
+// 0 to 1
+{SinOsc.kr(4, phase: pi * 1.5, add:0.5, mul:0.5)}.plot(1);
 
 
+{Pulse.ar(110, Line.kr(0, 1, 5))}.play;
 
+
+{HPF.ar(WhiteNoise.ar(1), Line.ar(1000, 20000, 10))}.play;
+
+{LPF.ar(WhiteNoise.ar(1), Line.ar(10000, 200, 10))}.play;
+
+// Sin 1000 20000
+{SinOsc.kr(4, add:4000, mul: 4000)}.plot(1);
+{HPF.ar(WhiteNoise.ar(1), SinOsc.kr(4/60, add:4000, mul: 4000))}.play;
+{LPF.ar(WhiteNoise.ar(1), SinOsc.kr(5/60, add:4000, mul: 4000))}.play;
 
 
 

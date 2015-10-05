@@ -161,23 +161,25 @@ class ARControlInstrumentBuilder extends AbstractInstrumentBuilder with ControlI
         "releaseType", releaseType.name)
 }
 
-object SinControlInstrumentBuilder {
-  def sin(dur: Float, startFreq: Float, endFreq: Float, mulStart: Float = 1.0f, mulEnd: Float = 1.0f, addStart: Float = 0, addEnd: Float = 0, nodeId: Node = SOURCE) =
-    new SinControlInstrumentBuilder()
+object SineControlInstrumentBuilder {
+  def sin(dur: Float, startFreq: Float, endFreq: Float, phase: Float = 0, mulStart: Float = 1.0f, mulEnd: Float = 1.0f, addStart: Float = 0, addEnd: Float = 0, nodeId: Node = SOURCE) =
+    new SineControlInstrumentBuilder()
       .nodeId(nodeId)
       .freq(startFreq, endFreq)
+      .phase(phase)
       .mul(mulStart, mulEnd)
       .add(addStart, addEnd)
       .dur(dur)
 }
 
-class SinControlInstrumentBuilder extends AbstractInstrumentBuilder with ControlInstrumentBuilder {
-  type SelfType = SinControlInstrumentBuilder
+class SineControlInstrumentBuilder extends AbstractInstrumentBuilder with ControlInstrumentBuilder {
+  type SelfType = SineControlInstrumentBuilder
   def self(): SelfType = this
-  val instrumentName: String = "sinControl"
+  val instrumentName: String = "sineControl"
 
   var startFreq: jl.Float = buildFloat(1.0f)
   var endFreq: jl.Float = buildFloat(1.0f)
+  var phase: jl.Float = buildFloat(0f)
   var mulStart: jl.Float = buildFloat(1.0f)
   var mulEnd: jl.Float = buildFloat(1.0f)
   var addStart: jl.Float = buildFloat(0.0f)
@@ -186,6 +188,11 @@ class SinControlInstrumentBuilder extends AbstractInstrumentBuilder with Control
   def freq(start: Float, end: Float): SelfType = {
     startFreq = buildFloat(start)
     endFreq = buildFloat(end)
+    self()
+  }
+
+  def phase(phaseValue: Float): SelfType = {
+    phase = buildFloat(phaseValue)
     self()
   }
 
@@ -208,6 +215,7 @@ class SinControlInstrumentBuilder extends AbstractInstrumentBuilder with Control
       Seq(
         "startFreq", startFreq,
         "endFreq", endFreq,
+        "phase", phase,
         "mulStart", mulStart,
         "mulEnd", mulEnd,
         "addStart", addStart,
@@ -261,6 +269,44 @@ class DustInstrumentBuilder extends AbstractInstrumentBuilder with DurBuilder wi
       ampBus.buildBus() ++
       freqBus.buildBus() ++
       buildDur()
+}
+
+class PulseInstrumentBuilder extends AbstractInstrumentBuilder with DurBuilder with OutputBuilder {
+  type SelfType = PulseInstrumentBuilder
+
+  def self(): SelfType = this
+
+  val instrumentName: String = "pulse"
+
+  val ampBus = ControlArgumentBuilder[PulseInstrumentBuilder](this, "ampBus")
+  val freqBus = ControlArgumentBuilder[PulseInstrumentBuilder](this, "freqBus")
+  val widthBus = ControlArgumentBuilder[PulseInstrumentBuilder](this, "widthBus")
+
+  override def build(): Seq[Object] =
+    super.build() ++
+      buildOut() ++
+      buildDur() ++
+      ampBus.buildBus() ++
+      freqBus.buildBus() ++
+      widthBus.buildBus()
+}
+
+class SineInstrumentBuilder extends AbstractInstrumentBuilder with DurBuilder with OutputBuilder {
+  type SelfType = SineInstrumentBuilder
+
+  def self(): SelfType = this
+
+  val instrumentName: String = "sine"
+
+  val ampBus = ControlArgumentBuilder[SineInstrumentBuilder](this, "ampBus")
+  val freqBus = ControlArgumentBuilder[SineInstrumentBuilder](this, "freqBus")
+
+  override def build(): Seq[Object] =
+    super.build() ++
+      buildOut() ++
+      buildDur() ++
+      ampBus.buildBus() ++
+      freqBus.buildBus()
 }
 
 abstract class CommonAuralInstrumentBuilder extends AbstractInstrumentBuilder with DurBuilder with OutputBuilder {
@@ -349,72 +395,150 @@ class PanInstrumentBuilder extends AbstractInstrumentBuilder with DurBuilder wit
       panBus.buildBus()
 }
 
-class GverbInstrumentBuilder extends AbstractInstrumentBuilder with DurBuilder with InputBuilder with OutputBuilder {
-  type SelfType = GverbInstrumentBuilder
+class FilterInstrumentBuilder extends AbstractInstrumentBuilder with DurBuilder with InputBuilder with OutputBuilder {
+  type SelfType = FilterInstrumentBuilder
+
   def self(): SelfType = this
 
-  val instrumentName: String = "gverb"
+  val instrumentName: String = "filt"
 
-  var roomSize: jl.Float = buildFloat(0f)
-
-  def roomSize(value: Float): SelfType = {
-    roomSize = buildFloat(value)
-    self()
-  }
-
-  var revTime: jl.Float = buildFloat(0f)
-
-  def revTime(value: Float): SelfType = {
-    revTime = buildFloat(value)
-    self()
-  }
-
-  var damping: jl.Float = buildFloat(0f)
-
-  def damping(value: Float): SelfType = {
-    damping = buildFloat(value)
-    self()
-  }
-
-  var inputBw: jl.Float = buildFloat(0f)
-
-  def inputBw(value: Float): SelfType = {
-    inputBw = buildFloat(value)
-    self()
-  }
-
-  var spread: jl.Float = buildFloat(0f)
-
-  def spread(value: Float): SelfType = {
-    spread = buildFloat(value)
-    self()
-  }
-
-  var earlyLevel: jl.Float = buildFloat(0f)
-
-  def earlyLevel(value: Float): SelfType = {
-    earlyLevel = buildFloat(value)
-    self()
-  }
-
-  var tailLevel: jl.Float = buildFloat(0f)
-
-  def tailLevel(value: Float): SelfType = {
-    tailLevel = buildFloat(value)
-    self()
-  }
+  val ampBus = ControlArgumentBuilder[FilterInstrumentBuilder](this, "ampBus")
+  val freqBus = ControlArgumentBuilder[FilterInstrumentBuilder](this, "freqBus")
+  val bwBus = ControlArgumentBuilder[FilterInstrumentBuilder](this, "bwBus")
 
   override def build(): Seq[Object] =
     super.build() ++
       buildIn() ++
       buildOut() ++
       buildDur() ++
-      Seq(
-        "roomSize", roomSize,
-        "revTime", revTime,
-        "damping", damping,
-        "inputBw", inputBw,
-        "spread", spread,
-        "earlyLevel", earlyLevel,
-        "tailLevel", tailLevel)
+      ampBus.buildBus() ++
+      freqBus.buildBus() ++
+      bwBus.buildBus()
+}
+
+class FilterRejectInstrumentBuilder extends AbstractInstrumentBuilder with DurBuilder with InputBuilder with OutputBuilder {
+  type SelfType = FilterRejectInstrumentBuilder
+
+  def self(): SelfType = this
+
+  val instrumentName: String = "filtReject"
+
+  val ampBus = ControlArgumentBuilder[FilterRejectInstrumentBuilder](this, "ampBus")
+  val freqBus = ControlArgumentBuilder[FilterRejectInstrumentBuilder](this, "freqBus")
+  val bwBus = ControlArgumentBuilder[FilterRejectInstrumentBuilder](this, "bwBus")
+
+  override def build(): Seq[Object] =
+    super.build() ++
+      buildIn() ++
+      buildOut() ++
+      buildDur() ++
+      ampBus.buildBus() ++
+      freqBus.buildBus() ++
+      bwBus.buildBus()
+}
+
+class FilterReplaceInstrumentBuilder extends AbstractInstrumentBuilder with DurBuilder with InputBuilder {
+  type SelfType = FilterReplaceInstrumentBuilder
+
+  def self(): SelfType = this
+
+  val instrumentName: String = "filtReplace"
+
+  val ampBus = ControlArgumentBuilder[FilterReplaceInstrumentBuilder](this, "ampBus")
+  val freqBus = ControlArgumentBuilder[FilterReplaceInstrumentBuilder](this, "freqBus")
+  val bwBus = ControlArgumentBuilder[FilterReplaceInstrumentBuilder](this, "bwBus")
+
+  override def build(): Seq[Object] =
+    super.build() ++
+      buildIn() ++
+      buildDur() ++
+      ampBus.buildBus() ++
+      freqBus.buildBus() ++
+      bwBus.buildBus()
+}
+
+class FilterRejectReplaceInstrumentBuilder extends AbstractInstrumentBuilder with DurBuilder with InputBuilder {
+  type SelfType = FilterRejectReplaceInstrumentBuilder
+
+  def self(): SelfType = this
+
+  val instrumentName: String = "filtRejectReplace"
+
+  val ampBus = ControlArgumentBuilder[FilterRejectReplaceInstrumentBuilder](this, "ampBus")
+  val freqBus = ControlArgumentBuilder[FilterRejectReplaceInstrumentBuilder](this, "freqBus")
+  val bwBus = ControlArgumentBuilder[FilterRejectReplaceInstrumentBuilder](this, "bwBus")
+
+  override def build(): Seq[Object] =
+    super.build() ++
+      buildIn() ++
+      buildDur() ++
+      ampBus.buildBus() ++
+      freqBus.buildBus() ++
+      bwBus.buildBus()
+}
+
+class HighpassInstrumentBuilder extends AbstractInstrumentBuilder with DurBuilder with InputBuilder with OutputBuilder {
+  type SelfType = HighpassInstrumentBuilder
+
+  def self(): SelfType = this
+
+  val instrumentName: String = "highPass"
+
+  val freqBus = ControlArgumentBuilder[HighpassInstrumentBuilder](this, "freqBus")
+
+  override def build(): Seq[Object] =
+    super.build() ++
+      buildIn() ++
+      buildOut() ++
+      buildDur() ++
+      freqBus.buildBus()
+}
+
+class HighpassReplaceInstrumentBuilder extends AbstractInstrumentBuilder with DurBuilder with InputBuilder {
+  type SelfType = HighpassReplaceInstrumentBuilder
+
+  def self(): SelfType = this
+
+  val instrumentName: String = "highPassReplace"
+
+  val freqBus = ControlArgumentBuilder[HighpassReplaceInstrumentBuilder](this, "freqBus")
+
+  override def build(): Seq[Object] =
+    super.build() ++
+      buildIn() ++
+      buildDur() ++
+      freqBus.buildBus()
+}
+
+class LowpassInstrumentBuilder extends AbstractInstrumentBuilder with DurBuilder with InputBuilder with OutputBuilder {
+  type SelfType = LowpassInstrumentBuilder
+
+  def self(): SelfType = this
+
+  val instrumentName: String = "lowPass"
+
+  val freqBus = ControlArgumentBuilder[LowpassInstrumentBuilder](this, "freqBus")
+
+  override def build(): Seq[Object] =
+    super.build() ++
+      buildIn() ++
+      buildOut() ++
+      buildDur() ++
+      freqBus.buildBus()
+}
+
+class LowpassReplaceInstrumentBuilder extends AbstractInstrumentBuilder with DurBuilder with InputBuilder {
+  type SelfType = LowpassReplaceInstrumentBuilder
+
+  def self(): SelfType = this
+
+  val instrumentName: String = "lowPassReplace"
+
+  val freqBus = ControlArgumentBuilder[LowpassReplaceInstrumentBuilder](this, "freqBus")
+
+  override def build(): Seq[Object] =
+    super.build() ++
+      buildIn() ++
+      buildDur() ++
+      freqBus.buildBus()
 }
