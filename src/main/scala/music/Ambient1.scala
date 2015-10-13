@@ -348,6 +348,27 @@ object Ambient1 {
     player.sendNew(absoluteTimeToMillis(start), pulse ++ highpass ++ pan)
   }
 
+  def sine(start: Float, dur: Float, amp: (Float, Float) = (0.2f, 0.2f), ampSpeed: (Float, Float), freq: Float, panSpeed: (Float, Float), panPhase: Float = 0f, bus: Int = 16)(implicit player: MusicPlayer): Unit = {
+    val sine = new SineInstrumentBuilder()
+      .addAction(TAIL_ACTION)
+      .out(bus)
+      .dur(dur)
+      .freqBus.control(line(dur, freq, freq))
+      .ampBus.control(sin(dur, ampSpeed._1/dur, ampSpeed._2/dur, mulStart = amp._1, mulEnd = amp._2))
+      .buildInstruments()
+
+    val pan = new PanInstrumentBuilder()
+      .addAction(TAIL_ACTION)
+      .dur(dur)
+      .in(bus)
+      .out(0)
+      .panBus.control(sin(dur, panSpeed._1/dur, panSpeed._2/dur, phase = panPhase))
+      .buildInstruments()
+
+    player.sendNew(absoluteTimeToMillis(start), sine ++ pan)
+  }
+
+
   def pulse1(start: Float = 0f)(implicit player: MusicPlayer): Unit = {
     val spectrum = Spectrum.makeSpectrum(20, 1, 200)
 
@@ -362,9 +383,28 @@ object Ambient1 {
 
     pulse(start, dur = dur, amp = (0.02f, 0.02f), ampSpeed = (3f, 5f), freq = spectrum(2), panSpeed = (8f, 13f), bus = 28)
 
-    slowPulseHighpass(start, dur = dur, amp = (0.08f, 0.05f), ampSpeed = (1f, 2f), freq = (0.3f, 0.5f), width = (0.5f, 0.99f), filterFreq = (4000f, 3000f), panSpeed = (5f, 8f), bus = 29)
+    slowPulseHighpass(start, dur = dur, amp = (0.12f, 0.08f), ampSpeed = (1f, 2f), freq = (0.3f, 0.5f), width = (0.5f, 0.99f), filterFreq = (4000f, 3000f), panSpeed = (5f, 8f), bus = 29)
 
     Thread.sleep(5000)
+  }
+
+
+  def sine1(start: Float = 0f)(implicit player: MusicPlayer): Unit = {
+    val spectrum = Spectrum.makeSpectrum(20, 1, 200)
+
+    val dur = 60f * 3
+
+    sine(start, dur = dur, amp = (0.06f, 0.04f), ampSpeed = (1f, 2f), freq = spectrum(2), panSpeed = (5f, 8f), bus = 30)
+    sine(start, dur = dur, amp = (0.04f, 0.05f), ampSpeed = (3f, 1f), freq = spectrum(4), panSpeed = (3f, 13f), bus = 31)
+    sine(start, dur = dur, amp = (0.03f, 0.02f), ampSpeed = (2f, 3f), freq = spectrum(6), panSpeed = (8f, 5f), bus = 32)
+
+    sine(start, dur = dur, amp = (0.4f, 0.2f), ampSpeed = (8f, 13f), freq = spectrum(35), panSpeed = (3f, 2f), bus = 33)
+    sine(start, dur = dur, amp = (0.3f, 0.3f), ampSpeed = (13f, 8f), freq = spectrum(38), panSpeed = (5f, 8f), bus = 34)
+    sine(start, dur = dur, amp = (0.2f, 0.1f), ampSpeed = (5f, 21f), freq = spectrum(40), panSpeed = (13f, 8f), bus = 35)
+
+    sine(start, dur = dur, amp = (0.04f, 0.02f), ampSpeed = (2f, 1f), freq = spectrum(80), panSpeed = (21f, 13f), bus = 36)
+    sine(start, dur = dur, amp = (0.03f, 0.01f), ampSpeed = (1f, 2f), freq = spectrum(85), panSpeed = (13f, 34f), bus = 37)
+    sine(start, dur = dur, amp = (0.02f, 0.01f), ampSpeed = (5f, 3f), freq = spectrum(90), panSpeed = (34f, 21f), bus = 38)
   }
 
   def main(args: Array[String]): Unit = {
@@ -376,6 +416,8 @@ object Ambient1 {
     setupNodes(player)
     noise1()
     pulse1((60 * 3) + 6)
+    sine1((60 * 6) + 6 + 6)
     //pulse1(0)
+    //sine1()
   }
 }
