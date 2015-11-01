@@ -212,64 +212,7 @@ object Ambient1 {
     player.sendNew(absoluteTimeToMillis(start), brown ++ dust ++  pan)
   }
 
-  def noise1()(implicit player: MusicPlayer): Unit = {
 
-
-    val dur = 60f * 3
-    whiteLowpass(start = 0f, dur = dur,
-      amp = (0.04f, 0.01f), ampSpeed = (3f, 2f),
-      dustSpeed = (2, 10, 5), dustAmpFactor = 25,
-      panSpeed = (5f, 3f),
-      filterFreq = (3f/dur, 5f/dur), filterAdd = (1000f, 4000f), filterMul = (100f, 1000f),
-      bus = 16)
-
-    whiteHighpass(start = 0f, dur = dur,
-      amp = (0.01f, 0.04f), ampSpeed = (5f, 3f),
-      dustSpeed = (5, 15, 3), dustAmpFactor = 25,
-      panSpeed = (2f, 5f), panPhase = Math.PI.toFloat,
-      filterFreq = (5f/dur, 3f/dur), filterAdd = (4000f, 1000f), filterMul = (1000f, 100f),
-      bus = 17)
-
-    whiteLowpass(start = 0f, dur = dur,
-      amp = (0.03f, 0.04f), ampSpeed = (5f, 3f),
-      dustSpeed = (13, 8, 3), dustAmpFactor = 25,
-      panSpeed = (5f, 8f),
-      filterFreq = (3f/dur, 5f/dur), filterAdd = (4000f, 1000f), filterMul = (1000f, 500f),
-      bus = 18)
-
-    whiteHighpass(start = 0f, dur = dur,
-      amp = (0.04f, 0.03f), ampSpeed = (3f, 5f),
-      dustSpeed = (10, 16, 6), dustAmpFactor = 25,
-      panSpeed = (7f, 4f), panPhase = Math.PI.toFloat,
-      filterFreq = (8f/dur, 13f/dur), filterAdd = (1000f, 3000f), filterMul = (1000f, 2000f),
-      bus = 19)
-
-    pink(start = 0f, dur = dur,
-      amp = (0.05f, 0.08f), ampSpeed = (2f, 1f),
-      dustSpeed = (3, 8, 5), dustAmpFactor = 10,
-      panSpeed = (1f, 3f),
-      bus = 20)
-
-    pink(start = 0f, dur = dur,
-      amp = (0.05f, 0.08f), ampSpeed = (2f, 1f),
-      dustSpeed = (21, 3, 13), dustAmpFactor = 10,
-      panSpeed = (5f, 3f), panPhase = Math.PI.toFloat,
-      bus = 21)
-
-    brown(start = 0f, dur = dur,
-      amp = (0.04f, 0.03f), ampSpeed = (1f, 2f),
-      dustSpeed = (8, 5, 3), dustAmpFactor = 10,
-      panSpeed = (3f, 1f),  panPhase = Math.PI.toFloat,
-      bus = 22)
-
-    brown(start = 0f, dur = dur,
-      amp = (0.04f, 0.03f), ampSpeed = (2f, 5f),
-      dustSpeed = (8, 5, 3), dustAmpFactor = 10,
-      panSpeed = (1f, 5f),
-      bus = 23)
-
-    Thread.sleep(5000)
-  }
 
   def pulse(start: Float, dur: Float, amp: (Float, Float) = (0.2f, 0.2f), ampSpeed: (Float, Float), freq: Float, panSpeed: (Float, Float), panPhase: Float = 0f, bus: Int = 16)(implicit player: MusicPlayer): Unit = {
     val pulse = new  PulseInstrumentBuilder()
@@ -368,13 +311,68 @@ object Ambient1 {
     player.sendNew(absoluteTimeToMillis(start), sine ++ pan)
   }
 
+  def noise1()(implicit player: MusicPlayer): Unit = {
+
+    val dur = 60f * 3
+    whiteLowpass(start = 0f, dur = dur,
+      amp = (0.04f, 0.01f), ampSpeed = (3f, 2f),
+      dustSpeed = (2, 10, 5), dustAmpFactor = 25,
+      panSpeed = (5f, 3f),
+      filterFreq = (3f/dur, 5f/dur), filterAdd = (1000f, 4000f), filterMul = (100f, 1000f),
+      bus = 16)
+
+    whiteHighpass(start = 0f, dur = dur,
+      amp = (0.01f, 0.04f), ampSpeed = (5f, 3f),
+      dustSpeed = (5, 15, 3), dustAmpFactor = 25,
+      panSpeed = (2f, 5f), panPhase = Math.PI.toFloat,
+      filterFreq = (5f/dur, 3f/dur), filterAdd = (4000f, 1000f), filterMul = (1000f, 100f),
+      bus = 17)
+
+    whiteLowpass(start = 0f, dur = dur,
+      amp = (0.03f, 0.04f), ampSpeed = (5f, 3f),
+      dustSpeed = (13, 8, 3), dustAmpFactor = 25,
+      panSpeed = (5f, 8f),
+      filterFreq = (3f/dur, 5f/dur), filterAdd = (4000f, 1000f), filterMul = (1000f, 500f),
+      bus = 18)
+
+    whiteHighpass(start = 0f, dur = dur,
+      amp = (0.04f, 0.03f), ampSpeed = (3f, 5f),
+      dustSpeed = (10, 16, 6), dustAmpFactor = 25,
+      panSpeed = (7f, 4f), panPhase = Math.PI.toFloat,
+      filterFreq = (8f/dur, 13f/dur), filterAdd = (1000f, 3000f), filterMul = (1000f, 2000f),
+      bus = 19)
+
+    pink(start = 0f, dur = dur,
+      amp = (0.05f, 0.08f), ampSpeed = (2f, 1f),
+      dustSpeed = (3, 8, 5), dustAmpFactor = 10,
+      panSpeed = (1f, 3f),
+      bus = 20)
+
+    pink(start = 0f, dur = dur,
+      amp = (0.05f, 0.08f), ampSpeed = (2f, 1f),
+      dustSpeed = (21, 3, 13), dustAmpFactor = 10,
+      panSpeed = (5f, 3f), panPhase = Math.PI.toFloat,
+      bus = 21)
+
+    brown(start = 0f, dur = dur,
+      amp = (0.04f, 0.03f), ampSpeed = (1f, 2f),
+      dustSpeed = (8, 5, 3), dustAmpFactor = 10,
+      panSpeed = (3f, 1f),  panPhase = Math.PI.toFloat,
+      bus = 22)
+
+    brown(start = 0f, dur = dur,
+      amp = (0.04f, 0.03f), ampSpeed = (2f, 5f),
+      dustSpeed = (8, 5, 3), dustAmpFactor = 10,
+      panSpeed = (1f, 5f),
+      bus = 23)
+  }
 
   def pulse1(start: Float = 0f)(implicit player: MusicPlayer): Unit = {
     val spectrum = Spectrum.makeSpectrum(20, 1, 200)
 
     val dur = 60f * 3
 
-    slowPulseLowpass(start, dur = dur, amp = (0.02f, 0.05f), ampSpeed = (2f, 1f), freq = (0.1f, 0.2f), width = (0.01f, 0.5f), filterFreq = (200f, 1000f), panSpeed = (3f, 2f), bus = 24)
+    slowPulseLowpass(start, dur = dur, amp = (0.002f, 0.004f), ampSpeed = (2f, 1f), freq = (0.1f, 0.2f), width = (0.01f, 0.5f), filterFreq = (200f, 1000f), panSpeed = (3f, 2f), bus = 24)
     pulse(start, dur = dur, amp = (0.04f, 0.04f), ampSpeed = (2f, 1f), freq = spectrum(3), panSpeed = (3f, 2f), bus = 25)
 
     pulse(start, dur = dur, amp = (0.05f, 0.05f), ampSpeed = (1f, 2f), freq = spectrum(0), panSpeed = (5f, 8f), bus = 26)
@@ -383,7 +381,7 @@ object Ambient1 {
 
     pulse(start, dur = dur, amp = (0.02f, 0.02f), ampSpeed = (3f, 5f), freq = spectrum(2), panSpeed = (8f, 13f), bus = 28)
 
-    slowPulseHighpass(start, dur = dur, amp = (0.12f, 0.08f), ampSpeed = (1f, 2f), freq = (0.3f, 0.5f), width = (0.5f, 0.99f), filterFreq = (4000f, 3000f), panSpeed = (5f, 8f), bus = 29)
+    slowPulseHighpass(start, dur = dur, amp = (0.12f, 0.08f), ampSpeed = (1f, 2f), freq = (0.3f, 0.5f), width = (0.25f, 0.75f), filterFreq = (4000f, 3000f), panSpeed = (5f, 8f), bus = 29)
 
     Thread.sleep(5000)
   }
@@ -414,10 +412,11 @@ object Ambient1 {
     player.startPlay()
 
     setupNodes(player)
-    noise1()
-    pulse1((60 * 3) + 6)
-    sine1((60 * 6) + 6 + 6)
-    //pulse1(0)
-    //sine1()
+    //noise1()
+    //pulse1((60 * 3) + 6)
+    //sine1((60 * 6) + 6 + 6)
+    //pulse1()
+    sine1()
+    Thread.sleep(5000)
   }
 }
