@@ -2,7 +2,7 @@ name := "ambient-i"
 
 version := "1.0-SNAPSHOT"
 
-scalaVersion := "2.11.5"
+scalaVersion := "2.11.7"
 
 libraryDependencies += "com.illposed.osc" % "javaosc-core" % "0.2"
 

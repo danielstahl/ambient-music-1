@@ -37,3 +37,12 @@ s.record;
 s.stopRecording;
 
 
+s.prepareForRecord('/Users/danielstahl/Documents/Projects/ambient-i_mix/prologue-pulse_sc.aiff');
+s.prepareForRecord('/Users/danielstahl/Documents/Projects/ambient-i_mix/ambient1-noise_sc.aiff');
+s.prepareForRecord('/Users/danielstahl/Documents/Projects/ambient-i_mix/transition1-sine_sc.aiff');
+s.prepareForRecord('/Users/danielstahl/Documents/Projects/ambient-i_mix/ambient2-pulse_sc.aiff');
+s.prepareForRecord('/Users/danielstahl/Documents/Projects/ambient-i_mix/transition2-noise_sc.aiff');
+s.prepareForRecord('/Users/danielstahl/Documents/Projects/ambient-i_mix/ambient3-sine_sc.aiff');
+s.prepareForRecord('/Users/danielstahl/Documents/Projects/ambient-i_mix/epilogue-dust_sc.aiff');
+s.record;
+s.stopRecording;
