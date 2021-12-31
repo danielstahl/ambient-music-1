@@ -1,2 +1,2 @@
-# ambient-i
-Ambient music.
+# ambient-music-1
+Ambient Music 1.
