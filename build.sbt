@@ -1,4 +1,4 @@
-name := "ambient-i"
+name := "ambient-music-1"
 
 version := "1.0-SNAPSHOT"
 
